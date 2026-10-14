@@ -1,0 +1,5 @@
+requests>=2.32,<3
+pymupdf>=1.24,<2            # PDF text, hidden-text detection, optional OCR (needs tesseract)
+google-auth>=2.30,<3        # Drive downloads
+google-auth-oauthlib>=1.2,<2   # only for: python -m ats_worker authorize
+python-dotenv>=1.0,<2

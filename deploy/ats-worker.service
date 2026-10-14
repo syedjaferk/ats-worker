@@ -1,0 +1,25 @@
+# systemd unit: runs the worker at boot and restarts it if it stops.
+#   sudo cp deploy/ats-worker.service /etc/systemd/system/
+#   (edit User= and the paths below)
+#   sudo systemctl daemon-reload && sudo systemctl enable --now ats-worker
+#   journalctl -u ats-worker -f
+[Unit]
+Description=Resume ATS review worker (learn.parottasalna.com)
+After=network-online.target ollama.service
+Wants=network-online.target
+
+[Service]
+User=syedjaferk
+WorkingDirectory=/opt/ats-worker
+ExecStart=/opt/ats-worker/.venv/bin/python -m ats_worker run
+Restart=always
+RestartSec=30
+# Finish the current resume before stopping (a 14B model can take a few minutes).
+TimeoutStopSec=900
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/ats-worker
+
+[Install]
+WantedBy=multi-user.target

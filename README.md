@@ -101,4 +101,3 @@ Change `LLM_MODEL` in `.env` and restart. For vLLM or llama.cpp's server, set `L
   after 3 attempts it is marked failed.
 - **`portal refused the token`:** `ATS_WORKER_TOKEN` differs from the portal's.
 - Logs contain tracking IDs only, never resume text.
-# ats-worker
