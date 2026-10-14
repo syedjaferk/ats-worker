@@ -63,7 +63,7 @@ are inside it).
 ```bash
 ./run.sh setup     # first time: Ollama + model + worker image
 ./run.sh check     # model ready? Drive token loads? token set?
-./run.sh start     # (re)create the worker from .env + drive-token.json
+./run.sh start     # (re)create the worker from .env + drive-token.json (starts Ollama too)
 ./run.sh logs      # follow the log
 ./run.sh status    # what's running
 ./run.sh update    # rebuild from this folder's code and restart

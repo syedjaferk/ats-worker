@@ -16,8 +16,10 @@ ENGINE=$(command -v podman >/dev/null 2>&1 && echo podman || echo docker)
 OLLAMA_IMAGE=docker.io/ollama/ollama:0.15.1
 MODEL=$(sed -n 's/^LLM_MODEL=//p' .env 2>/dev/null | tail -1)
 MODEL=${MODEL:-qwen2.5:3b}
-# :Z relabels the files for SELinux (Rocky, Fedora, RHEL); Docker on Ubuntu ignores it.
-MOUNTS="-v $PWD/.env:/app/.env:ro,Z -v $PWD/drive-token.json:/app/drive-token.json:ro,Z"
+# :z relabels the files for SELinux (Rocky, Fedora, RHEL) so containers may read them; Docker on Ubuntu
+# ignores it. Lowercase on purpose: :Z would label them for ONE container, and the next one (./run.sh check)
+# would take them away from the running worker.
+MOUNTS="-v $PWD/.env:/app/.env:ro,z -v $PWD/drive-token.json:/app/drive-token.json:ro,z"
 
 need_files() {
     for f in .env drive-token.json; do
@@ -39,6 +41,8 @@ case "${1:-}" in
         ;;
     start)
         need_files
+        # After a reboot (without ./run.sh boot) Ollama sits stopped; the worker would just wait for it.
+        $ENGINE start ollama >/dev/null 2>&1 || echo "Ollama isn't set up yet: run ./run.sh setup" >&2
         # Recreate (not restart): .env and the token are mounted as files, and an edited file is a
         # new file, which a running container would never see.
         $ENGINE rm -f ats-worker >/dev/null 2>&1 || true
